@@ -28,6 +28,23 @@ module.exports = function(app) {
         }),
     );
     app.use(
+        proxy("/70214.js", {
+            changeOrigin: true,
+            cookieDomainRewrite: "localhost",
+            secure: true,
+            target: "https://fast.appcues.com",
+            headers: {
+                host: domain.replace(/https:\/\//, ""),
+                origin: null,
+                // This is essential for Tiger backends. To ensure 401 flies when not authenticated and using proxy
+                "X-Requested-With": "XMLHttpRequest",
+            },
+            onProxyReq: function(proxyReq, _req, _res) {
+                proxyReq.setHeader("accept-encoding", "identity");
+            },
+        }),
+    );
+    app.use(
         proxy("/*.html", {
             changeOrigin: true,
             secure: false,
